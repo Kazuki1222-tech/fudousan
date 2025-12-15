@@ -1,10 +1,11 @@
 import React, { useState } from "react";
-import { ArrowRightLeft, Building2, Calculator, MapPin } from "lucide-react";
+import { ArrowRightLeft, Building2, Calculator, MapPin, School } from "lucide-react";
 import { APP_DESCRIPTION, APP_NAME } from "@/constants";
 import { TabType } from "@/types";
 import { Converter } from "@/components/features/Converter";
 import { UnitCalculator } from "@/components/features/UnitCalculator";
 import { PriceEstimator } from "@/components/features/PriceEstimator";
+import { SchoolDistrict } from "@/components/features/SchoolDistrict";
 
 const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState<TabType>(TabType.CONVERTER);
@@ -27,7 +28,7 @@ const App: React.FC = () => {
       </header>
 
       <main className="max-w-3xl mx-auto px-4 py-6">
-        <div className="mb-8 p-1 bg-slate-200/50 rounded-xl grid grid-cols-3 gap-1">
+        <div className="mb-8 p-1 bg-slate-200/50 rounded-xl grid grid-cols-4 gap-1">
           <button
             type="button"
             onClick={() => setActiveTab(TabType.CONVERTER)}
@@ -69,12 +70,27 @@ const App: React.FC = () => {
             <MapPin className="w-4 h-4" />
             <span>推定</span>
           </button>
+
+          <button
+            type="button"
+            onClick={() => setActiveTab(TabType.SCHOOL_DISTRICT)}
+            className={[
+              "flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 py-2 px-3 rounded-lg text-sm font-medium transition-all duration-200",
+              activeTab === TabType.SCHOOL_DISTRICT
+                ? "bg-white text-slate-900 shadow-sm ring-1 ring-black/5"
+                : "text-slate-500 hover:text-slate-700 hover:bg-slate-200/50",
+            ].join(" ")}
+          >
+            <School className="w-4 h-4" />
+            <span>学区</span>
+          </button>
         </div>
 
         <div className="min-h-[400px]">
           {activeTab === TabType.CONVERTER && <Converter />}
           {activeTab === TabType.CALCULATOR && <UnitCalculator />}
           {activeTab === TabType.ESTIMATOR && <PriceEstimator />}
+          {activeTab === TabType.SCHOOL_DISTRICT && <SchoolDistrict />}
         </div>
       </main>
 
@@ -93,4 +109,3 @@ const App: React.FC = () => {
 };
 
 export default App;
-
