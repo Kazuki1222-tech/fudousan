@@ -11,7 +11,6 @@ const PDFS: PdfLink[] = [
   { title: "町名別通学区域一覧", fileName: "町名別通学区域一覧.pdf" },
   { title: "小学校特定地域一覧", fileName: "小学校特定地域一覧.pdf" },
   { title: "中学校特定地域一覧", fileName: "中学校特定地域一覧.pdf" },
-  { title: "2025 学区（町名）", fileName: "2025_gakku-chomei.pdf" },
 ];
 
 export const SchoolDistrict: React.FC = () => {
@@ -56,4 +55,3 @@ export const SchoolDistrict: React.FC = () => {
     </div>
   );
 };
-
