@@ -7,40 +7,35 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 
 export const UnitCalculator: React.FC = () => {
-  const [price, setPrice] = useState<string>(""); // 円
+  const [price, setPrice] = useState<string>(""); // 万円
   const [area, setArea] = useState<string>("");
   const [areaUnit, setAreaUnit] = useState<UnitType>(UnitType.TSUBO);
 
   const results = useMemo(() => {
-    const priceNum = Number(price);
+    const priceManYen = Number(price);
     const areaNum = Number(area);
 
-    if (!Number.isFinite(priceNum) || !Number.isFinite(areaNum) || areaNum === 0) {
+    if (!Number.isFinite(priceManYen) || !Number.isFinite(areaNum) || areaNum === 0) {
       return null;
     }
 
     const tsuboArea = areaUnit === UnitType.TSUBO ? areaNum : areaNum / TSUBO_TO_M2_RATE;
     const m2Area = areaUnit === UnitType.M2 ? areaNum : areaNum * TSUBO_TO_M2_RATE;
 
-    const tsuboPrice = priceNum / tsuboArea;
-    const m2Price = priceNum / m2Area;
+    const tsuboPriceManYen = priceManYen / tsuboArea;
+    const m2PriceManYen = priceManYen / m2Area;
 
-    return { tsuboPrice, m2Price };
+    return { tsuboPriceManYen, m2PriceManYen };
   }, [price, area, areaUnit]);
 
   const chartData = results
     ? [
-        { name: "坪単価", value: results.tsuboPrice, fill: "#0f172a" }, // slate-900
-        { name: "㎡単価", value: results.m2Price, fill: "#3b82f6" }, // accent
+        { name: "坪単価", value: results.tsuboPriceManYen, fill: "#0f172a" }, // slate-900
+        { name: "㎡単価", value: results.m2PriceManYen, fill: "#3b82f6" }, // accent
       ]
     : [];
 
-  const formatCurrency = (val: number) =>
-    new Intl.NumberFormat("ja-JP", {
-      style: "currency",
-      currency: "JPY",
-      maximumFractionDigits: 0,
-    }).format(val);
+  const formatManYen = (val: number) => `${new Intl.NumberFormat("ja-JP", { maximumFractionDigits: 2 }).format(val)}万円`;
 
   return (
     <div className="space-y-6 animate-in slide-in-from-bottom-4 duration-500">
@@ -56,16 +51,16 @@ export const UnitCalculator: React.FC = () => {
         <CardContent className="space-y-6">
           <div className="grid gap-6 md:grid-cols-2">
             <div className="w-full">
-              <label className="block text-sm font-medium text-slate-700 mb-1.5">土地価格 (円)</label>
+              <label className="block text-sm font-medium text-slate-700 mb-1.5">土地価格 (万円)</label>
               <div className="relative">
                 <Input
                   type="number"
-                  placeholder="例: 30000000"
+                  placeholder="例: 3000"
                   value={price}
                   onChange={(e) => setPrice(e.target.value)}
                 />
                 <div className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 text-sm font-medium pointer-events-none">
-                  円
+                  万円
                 </div>
               </div>
             </div>
@@ -115,13 +110,13 @@ export const UnitCalculator: React.FC = () => {
               <div className="bg-slate-900 text-white p-6 rounded-xl shadow-lg">
                 <p className="text-slate-400 text-sm font-medium mb-1">坪単価</p>
                 <p className="text-3xl font-bold tracking-tight">
-                  {formatCurrency(results.tsuboPrice)}
+                  {formatManYen(results.tsuboPriceManYen)}
                   <span className="text-base font-normal text-slate-400 ml-1">/坪</span>
                 </p>
                 <div className="mt-4 pt-4 border-t border-slate-800">
                   <p className="text-slate-400 text-sm font-medium mb-1">㎡単価</p>
                   <p className="text-xl font-semibold">
-                    {formatCurrency(results.m2Price)}
+                    {formatManYen(results.m2PriceManYen)}
                     <span className="text-sm font-normal text-slate-400 ml-1">/㎡</span>
                   </p>
                 </div>
@@ -135,7 +130,7 @@ export const UnitCalculator: React.FC = () => {
                   <BarChart data={chartData} layout="vertical" margin={{ left: 20 }}>
                     <XAxis type="number" hide />
                     <YAxis dataKey="name" type="category" width={50} tick={{ fontSize: 12 }} interval={0} />
-                    <Tooltip formatter={(value: number) => formatCurrency(value)} />
+                    <Tooltip formatter={(value: number) => formatManYen(value)} />
                     <Bar dataKey="value" radius={[0, 4, 4, 0]} barSize={30}>
                       {chartData.map((entry, index) => (
                         <Cell key={`cell-${index}`} fill={entry.fill} />
@@ -155,4 +150,3 @@ export const UnitCalculator: React.FC = () => {
     </div>
   );
 };
-
