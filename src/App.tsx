@@ -1,11 +1,29 @@
-import React, { useState } from "react";
+import React, { Suspense, lazy, useState } from "react";
 import { ArrowRightLeft, Building2, Calculator, MapPin, School } from "lucide-react";
 import { APP_DESCRIPTION, APP_NAME } from "@/constants";
 import { TabType } from "@/types";
 import { Converter } from "@/components/features/Converter";
-import { UnitCalculator } from "@/components/features/UnitCalculator";
-import { PriceEstimator } from "@/components/features/PriceEstimator";
-import { SchoolDistrict } from "@/components/features/SchoolDistrict";
+
+const UnitCalculator = lazy(async () => {
+  const module = await import("@/components/features/UnitCalculator");
+  return { default: module.UnitCalculator };
+});
+
+const PriceEstimator = lazy(async () => {
+  const module = await import("@/components/features/PriceEstimator");
+  return { default: module.PriceEstimator };
+});
+
+const SchoolDistrict = lazy(async () => {
+  const module = await import("@/components/features/SchoolDistrict");
+  return { default: module.SchoolDistrict };
+});
+
+const TabPanelFallback: React.FC = () => (
+  <div className="rounded-xl border border-dashed border-slate-200 bg-white p-8 text-center text-sm text-slate-400">
+    読み込み中...
+  </div>
+);
 
 const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState<TabType>(TabType.CONVERTER);
@@ -88,9 +106,21 @@ const App: React.FC = () => {
 
         <div className="min-h-[400px]">
           {activeTab === TabType.CONVERTER && <Converter />}
-          {activeTab === TabType.CALCULATOR && <UnitCalculator />}
-          {activeTab === TabType.ESTIMATOR && <PriceEstimator />}
-          {activeTab === TabType.SCHOOL_DISTRICT && <SchoolDistrict />}
+          {activeTab === TabType.CALCULATOR && (
+            <Suspense fallback={<TabPanelFallback />}>
+              <UnitCalculator />
+            </Suspense>
+          )}
+          {activeTab === TabType.ESTIMATOR && (
+            <Suspense fallback={<TabPanelFallback />}>
+              <PriceEstimator />
+            </Suspense>
+          )}
+          {activeTab === TabType.SCHOOL_DISTRICT && (
+            <Suspense fallback={<TabPanelFallback />}>
+              <SchoolDistrict />
+            </Suspense>
+          )}
         </div>
       </main>
 
